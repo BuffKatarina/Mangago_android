@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/before"
+        android:title="Previous"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_baseline_navigate_before_24" />
+    <item
+        android:id="@+id/next"
+        android:title="Next"
+        android:icon="@drawable/ic_baseline_navigate_next_24"
+        app:showAsAction="ifRoom" />
+
+</menu>

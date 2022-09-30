@@ -1,0 +1,10 @@
+body{
+    -webkit-tap-highlight-color: transparent;
+}
+
+.subnav{
+display:none}
+#reader-nav {
+    display: none;
+}
+

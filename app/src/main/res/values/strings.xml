@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mangago</string>
+    <string name="title_activity_manga_reader">Reader</string>
+    <string name="rss_positive">Yes</string>
+    <string name="rss_negative">No</string>
+    <string name="rss_dialogue_title">Add manga to RSS feed?</string>
+    <string name="rss_dialogue_message">You will get notifications on updates to this manga.</string>
+</resources>

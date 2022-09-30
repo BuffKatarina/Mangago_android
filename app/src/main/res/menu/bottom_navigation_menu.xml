@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="Home"/>
+    <item
+        android:id="@+id/rss"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_rss_feed_24"
+        android:title="RSS"/>
+
+</menu>
