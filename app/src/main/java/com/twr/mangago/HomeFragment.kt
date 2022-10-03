@@ -2,10 +2,10 @@ package com.twr.mangago
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -20,21 +20,19 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 
-
 class HomeFragment : Fragment() {
-    var homeView: View? = null
     var webView: WebView? = null
     var progressBar: ProgressBar? = null
     var baseMethods: BaseClass? = null
     var swipeRefresh: SwipeRefreshLayout? = null
     var addRSSDialog: AlertDialog.Builder? = null
-    var rssItems: ArrayList<RSSItem>? = null
-
+    var rssUrl : String? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val rssParser = RSSParser()
         val homeView = inflater.inflate(R.layout.home_fragment, container, false)
         webView = homeView.findViewById(R.id.webView)
         progressBar = homeView.findViewById(R.id.progress_bar)
@@ -46,15 +44,25 @@ class HomeFragment : Fragment() {
             progressBar!!
         )
         addRSSDialog = AlertDialog.Builder(activity)
+        addRSSDialog!!.setMessage(R.string.rss_dialogue_message)
             .setTitle(R.string.rss_dialogue_title)
-            .setMessage(R.string.rss_dialogue_message)
-            .setPositiveButton(
-                R.string.rss_positive,
-                DialogInterface.OnClickListener { dialogInterface, i -> return@OnClickListener })
-            .setNegativeButton(
-                R.string.rss_negative,
-                DialogInterface.OnClickListener { dialogInterface, i -> return@OnClickListener })
+            .setPositiveButton(R.string.rss_positive
+            ) { dialogInterface, i ->
+                rssParser.parseRSS(rssUrl!!).observe(viewLifecycleOwner) { returnrepo ->
+                    Log.i("IDK",returnrepo.toString())
+                }
+            }
+            .setNegativeButton(R.string.rss_negative
+            ) { dialogInterface, i ->
+                dialogInterface.cancel()
+            }.create()
+
         return homeView
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        webView!!.saveState(Bundle())
+        outState.putBundle("webViewState", Bundle())
+        super.onSaveInstanceState(outState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,7 +70,15 @@ class HomeFragment : Fragment() {
         baseMethods!!.swipeRefresh()
         baseMethods!!.baseLoadWeb()
         addRSSDialog!!.create()
-        loadWeb()
+        if (savedInstanceState != null){
+            with (savedInstanceState){
+                webView!!.restoreState(getBundle("webViewState")!!)
+            }
+        }
+
+        else{
+            loadWeb()
+        }
     }
 
     var readerResultLauncher = registerForActivityResult<Intent, ActivityResult>(
@@ -109,9 +125,7 @@ class HomeFragment : Fragment() {
             ): Boolean {
                 if (request.url.toString().contains("rsslink")) {
                     addRSSDialog!!.show()
-                    var rssParser = RSSParser()
-                    rssParser.parseRSS(request.url.toString())
-
+                    rssUrl = request.url.toString()
                     return true
                 }
                 return false

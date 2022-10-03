@@ -1,16 +1,11 @@
 package com.twr.mangago
 
 import androidx.appcompat.app.AppCompatActivity
-import android.webkit.WebView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import android.widget.ProgressBar
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.twr.mangago.HomeFragment
 import com.google.android.material.navigation.NavigationBarView
-import com.twr.mangago.RssNotificationFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         var selectedFragment: Fragment? = null
         when (item.itemId) {
             R.id.home -> selectedFragment = HomeFragment()
-            R.id.rss -> selectedFragment = RssNotificationFragment()
+            R.id.rss -> selectedFragment = RssLayoutFragment()
         }
         supportFragmentManager.beginTransaction().replace(
             R.id.fragment_container,

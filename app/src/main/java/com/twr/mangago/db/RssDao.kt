@@ -1,0 +1,18 @@
+package com.twr.mangago.db
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface RssDao {
+    @Insert
+    suspend fun insert(rss:Rss)
+
+    @Query("DELETE FROM rss_table")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM rss_table")
+    fun getRss(): Flow<List<Rss>>
+}

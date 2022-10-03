@@ -4,25 +4,13 @@ import android.webkit.WebView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import android.webkit.WebChromeClient
-import com.twr.mangago.RSSItem
-import com.twr.mangago.R
-import android.content.DialogInterface
-import androidx.activity.result.ActivityResultLauncher
 import android.content.Intent
-import androidx.activity.result.ActivityResultCallback
-import android.app.Activity
 import android.webkit.WebViewClient
 import android.graphics.Bitmap
 import android.os.*
 import android.util.Log
-import android.webkit.WebResourceRequest
-import org.xmlpull.v1.XmlPullParserFactory
-import org.xmlpull.v1.XmlPullParser
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.color.DynamicColors
-import com.twr.mangago.Reader.HtmlJavaScriptInterface
 import android.view.View.OnTouchListener
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.webkit.JavascriptInterface
@@ -31,26 +19,27 @@ import com.google.android.material.textfield.TextInputLayout
 import android.widget.AutoCompleteTextView
 import android.widget.ArrayAdapter
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.AdapterView
 import android.view.*
 import android.webkit.ValueCallback
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import androidx.annotation.UiThread
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jsoup.select.Elements
 import java.lang.Exception
 import java.util.ArrayList
 import java.util.HashMap
-import java.util.concurrent.Executor
 
 class Reader : AppCompatActivity() {
     var webView: WebView? = null
-    var userSelect = false
-    var url: String? = null
     var nextChapter: String? = null
     var previousChapter: String? = null
-    var html: String? = null
-    private var swipeRefresh: SwipeRefreshLayout? = null
+    var swipeRefresh: SwipeRefreshLayout? = null
     var chapterArray = ArrayList<String>()
     var chapterMap = HashMap<String, String>()
     var populated = false
@@ -76,15 +65,30 @@ class Reader : AppCompatActivity() {
             this,
             progressBar!!
         )
-        val intent = intent
+
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         baseMethods!!.setProgressBar()
         baseMethods!!.swipeRefresh()
         baseMethods!!.baseLoadWeb()
         vbottomAppBar = findViewById(R.id.bottomAppBar)
         bottomAppBar(vbottomAppBar)
-        loadWeb(intent.getStringExtra("url"))
+        if (savedInstanceState != null){
+            with (savedInstanceState){
+                webView!!.restoreState(getBundle("webViewState")!!)
+            }
+        }
 
+        else{
+            loadWeb(intent.getStringExtra("url"))
+        }
+
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        webView!!.saveState(Bundle())
+        outState.putBundle("webViewState", Bundle())
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -252,11 +256,13 @@ class Reader : AppCompatActivity() {
         }
     }
 
-    public inner class HtmlJavaScriptInterface {
+
+
+    public inner class HtmlJavaScriptInterface:ViewModel() {
         @JavascriptInterface
         fun handleHtml(html: String?) {
-            Thread(Runnable{ try {
-                val doc = Jsoup.parse(html)
+             try {
+                val doc = Jsoup.parse(html!!)
                 val currentChapter =
                     doc.select("a[class='btn btn-primary dropdown-toggle chapter btn-inverse']")
                         .first()?.ownText()
@@ -272,30 +278,31 @@ class Reader : AppCompatActivity() {
                     generateChapterList(chapters!!)
                     populated = true
                 }
-                runOnUiThread(java.lang.Runnable {populateSpinner(currentChapter)})
+                 viewModelScope.launch {
+                     populateSpinner(currentChapter)
+                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }}).start()
-
+            }
         }
     }
 
     fun populateSpinner(currentChapter: String?) {
-        val spinnerLayout = findViewById<TextInputLayout>(R.id.materialSpinner)
         val chaptersSpinner = findViewById<AutoCompleteTextView>(R.id.my_spinner_dropdown)
         val chaptersAdapter = ArrayAdapter(
             applicationContext,
             R.layout.spinner_menu,
             chapterArray
         )
-        chaptersSpinner.clearFocus()
-        chaptersSpinner.setText(currentChapter)
+        chaptersSpinner.setText(currentChapter, false)
         chaptersSpinner.setAdapter(chaptersAdapter)
         chaptersSpinner.onItemClickListener = OnItemClickListener { adapterView, view, i, l ->
             webView!!.loadUrl(
                 chapterMap[chaptersAdapter.getItem(i).toString()]!!
             )
+
         }
+
     }
 
     fun generateChapterList(chapters: Elements) {
@@ -316,6 +323,7 @@ class Reader : AppCompatActivity() {
         finish()
     }
 
+    @Suppress("DEPRECATION")
     fun hideSystemBars() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
@@ -336,6 +344,7 @@ class Reader : AppCompatActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     fun showSystemBars() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(true)
