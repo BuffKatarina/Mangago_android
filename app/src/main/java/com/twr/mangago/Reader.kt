@@ -178,7 +178,7 @@ class Reader : AppCompatActivity() {
     fun loadWeb(url: String?) {
         webView!!.addJavascriptInterface(HtmlJavaScriptInterface(), "HtmlHandler")
         webView!!.loadUrl(url!!)
-        webView!!.setOnScrollChangeListener { v, scrollX, scrollY, _, oldScrollY ->
+        webView!!.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             if (supportActionBar!!.isShowing) {
                 if (scrollY != oldScrollY) {
                     hideSystemBars()
@@ -296,7 +296,7 @@ class Reader : AppCompatActivity() {
         )
         chaptersSpinner.setText(currentChapter, false)
         chaptersSpinner.setAdapter(chaptersAdapter)
-        chaptersSpinner.onItemClickListener = OnItemClickListener { adapterView, view, i, l ->
+        chaptersSpinner.onItemClickListener = OnItemClickListener { _, _, i, _ ->
             webView!!.loadUrl(
                 chapterMap[chaptersAdapter.getItem(i).toString()]!!
             )

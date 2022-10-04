@@ -1,6 +1,5 @@
-package com.twr.mangago
+package com.twr.mangago.rss
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,7 +28,6 @@ class RSSParser : ViewModel() {
                     rssHashmap["latestChapter"] = latestChapter!!
                     rssHashmap["link"] = link!!
                     rssHashmap["lastUpdated"] = lastUpdated!!
-                    Log.i("RSSMAP",rssHashmap.toString())
                     result.postValue(rssHashmap)
 
                 }
@@ -41,5 +39,6 @@ class RSSParser : ViewModel() {
         return result
 
     }
+
 
 }

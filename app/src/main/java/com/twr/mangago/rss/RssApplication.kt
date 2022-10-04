@@ -1,4 +1,4 @@
-package com.twr.mangago
+package com.twr.mangago.rss
 
 import android.app.Application
 import com.twr.mangago.db.RssDb

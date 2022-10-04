@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -27,12 +25,12 @@ class HomeFragment : Fragment() {
     var swipeRefresh: SwipeRefreshLayout? = null
     var addRSSDialog: AlertDialog.Builder? = null
     var rssUrl : String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rssParser = RSSParser()
         val homeView = inflater.inflate(R.layout.home_fragment, container, false)
         webView = homeView.findViewById(R.id.webView)
         progressBar = homeView.findViewById(R.id.progress_bar)
@@ -47,13 +45,11 @@ class HomeFragment : Fragment() {
         addRSSDialog!!.setMessage(R.string.rss_dialogue_message)
             .setTitle(R.string.rss_dialogue_title)
             .setPositiveButton(R.string.rss_positive
-            ) { dialogInterface, i ->
-                rssParser.parseRSS(rssUrl!!).observe(viewLifecycleOwner) { returnrepo ->
-                    Log.i("IDK",returnrepo.toString())
-                }
+            ) { _, _ ->
+
             }
             .setNegativeButton(R.string.rss_negative
-            ) { dialogInterface, i ->
+            ) { dialogInterface, _ ->
                 dialogInterface.cancel()
             }.create()
 
@@ -81,7 +77,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    var readerResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+    var readerResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -92,7 +88,7 @@ class HomeFragment : Fragment() {
 
     fun loadWeb() {
         webView!!.loadUrl("https://www.mangago.me/")
-        webView!!.setOnKeyListener(View.OnKeyListener { view, i, keyEvent ->
+        webView!!.setOnKeyListener(View.OnKeyListener { _, _, keyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK && webView!!.canGoBack()) {
                 webView!!.goBack()
                 return@OnKeyListener true

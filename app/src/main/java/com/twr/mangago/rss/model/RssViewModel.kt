@@ -1,4 +1,4 @@
-package com.twr.mangago
+package com.twr.mangago.rss.model
 
 import androidx.lifecycle.*
 import com.twr.mangago.db.Rss

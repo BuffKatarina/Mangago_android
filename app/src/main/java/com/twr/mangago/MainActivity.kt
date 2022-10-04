@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
+import com.twr.mangago.rss.RssLayoutFragment
 
 class MainActivity : AppCompatActivity() {
 
