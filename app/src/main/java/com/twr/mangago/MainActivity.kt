@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             rssLayoutFragment = manager.findFragmentByTag("RssLayoutFragment")!!
             manager
                 .beginTransaction()
-                .detach(rssLayoutFragment)
+                .hide(rssLayoutFragment)
                 .commit()
         }
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             R.id.home -> {
                 if (homeFragment.isHidden) {
                     manager.beginTransaction()
-                        .detach(rssLayoutFragment)
+                        .hide(rssLayoutFragment)
                         .show(homeFragment)
                         .commit()
                 }
@@ -49,10 +49,10 @@ class MainActivity : AppCompatActivity() {
 
 
             R.id.rss -> {
-                if(rssLayoutFragment.isDetached) {
+                if(rssLayoutFragment.isHidden) {
                     manager.beginTransaction()
                         .hide(homeFragment)
-                        .attach(rssLayoutFragment)
+                        .show(rssLayoutFragment)
                         .commit()
 
                 }

@@ -1,6 +1,7 @@
 package com.twr.mangago.rss.adapter
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -83,7 +84,8 @@ class RssComparator : DiffUtil.ItemCallback<Rss>() {
     }
 
     override fun areContentsTheSame(oldItem: Rss, newItem: Rss): Boolean {
-        return oldItem.link == newItem.link
+
+        return (oldItem.link == newItem.link)
        }
 }
 
