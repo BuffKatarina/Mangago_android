@@ -16,19 +16,17 @@ import com.twr.mangago.rss.model.RssViewModel
 import com.twr.mangago.rss.model.RssViewModelFactory
 
 @Suppress("DEPRECATION")
-class RssLayoutFragment : Fragment() {
-    private val rssViewModel: RssViewModel by viewModels {
+class RssLayoutFragment : Fragment(){
+     private val rssViewModel: RssViewModel by viewModels {
         RssViewModelFactory((requireActivity().application as RssApplication).repository)
     }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        parentFragmentManager.setFragmentResultListener("resultKey", viewLifecycleOwner){ _, bundle ->
+        parentFragmentManager.setFragmentResultListener("rssKey", viewLifecycleOwner){ _, bundle ->
             val title = bundle.getString("title")
             val link = bundle.getString("link")
             val lastUpdated = bundle.getString("lastUpdated")
@@ -41,19 +39,21 @@ class RssLayoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.feedRecyclerView)
-        val adapter = RssRecyclerViewAdapter()
+        val adapter = RssRecyclerViewAdapter(rssViewModel)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         rssViewModel.allRss.observe(viewLifecycleOwner) { rss ->
             rss?.let { adapter.submitList(it) }
-        }
 
+        }
+        val manager = requireActivity().supportFragmentManager
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            val addRssFragment = AddRssFragment()
-            requireActivity().supportFragmentManager.beginTransaction().
-            replace(R.id.fragment_container, addRssFragment, "AddRssFragment")
-                .addToBackStack(null).commit()
+           manager.beginTransaction()
+                .add(R.id.fragment_container, AddRssFragment(), "AddRssFragment")
+               .hide(this)
+                .addToBackStack(null)
+                .commit()
         }
     }
 

@@ -14,8 +14,12 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.twr.mangago.rss.AddRssFragment
+
 
 
 class HomeFragment : Fragment() {
@@ -26,12 +30,14 @@ class HomeFragment : Fragment() {
     var addRSSDialog: AlertDialog.Builder? = null
     var rssUrl : String? = null
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val homeView = inflater.inflate(R.layout.home_fragment, container, false)
+        val manager = requireActivity().supportFragmentManager
         webView = homeView.findViewById(R.id.webView)
         progressBar = homeView.findViewById(R.id.progress_bar)
         swipeRefresh = homeView.findViewById(R.id.swipeContainer)
@@ -41,20 +47,28 @@ class HomeFragment : Fragment() {
             requireActivity(),
             progressBar!!
         )
+
         addRSSDialog = AlertDialog.Builder(activity)
         addRSSDialog!!.setMessage(R.string.rss_dialogue_message)
             .setTitle(R.string.rss_dialogue_title)
             .setPositiveButton(R.string.rss_positive
             ) { _, _ ->
 
+                setFragmentResult("rssOnLink", bundleOf("url" to rssUrl))
+                manager
+                    .beginTransaction()
+                    .hide(this)
+                    .add(R.id.fragment_container, AddRssFragment(), "AddRssFragment")
+                    .addToBackStack(null)
+                    .commit()
             }
-            .setNegativeButton(R.string.rss_negative
-            ) { dialogInterface, _ ->
-                dialogInterface.cancel()
-            }.create()
+            .setNegativeButton(R.string.rss_negative,null)
+            .create()
 
         return homeView
     }
+
+
     override fun onSaveInstanceState(outState: Bundle) {
         webView!!.saveState(Bundle())
         outState.putBundle("webViewState", Bundle())
@@ -66,14 +80,14 @@ class HomeFragment : Fragment() {
         baseMethods!!.swipeRefresh()
         baseMethods!!.baseLoadWeb()
         addRSSDialog!!.create()
+
         if (savedInstanceState != null){
             with (savedInstanceState){
                 webView!!.restoreState(getBundle("webViewState")!!)
             }
         }
-
         else{
-            loadWeb()
+            loadWeb("https://www.mangago.me/")
         }
     }
 
@@ -86,8 +100,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun loadWeb() {
-        webView!!.loadUrl("https://www.mangago.me/")
+    private fun loadWeb(url:String) {
+        webView!!.loadUrl(url)
         webView!!.setOnKeyListener(View.OnKeyListener { _, _, keyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK && webView!!.canGoBack()) {
                 webView!!.goBack()
@@ -141,7 +155,7 @@ class HomeFragment : Fragment() {
         return webView!!.url!!.contains("read-manga") and (count > 5)
     }
 
-    fun goToReaderActivity(url: String?) {
+    private fun goToReaderActivity(url: String?) {
         val intent = Intent(activity, Reader::class.java)
         intent.putExtra("url", url)
         readerResultLauncher.launch(intent)

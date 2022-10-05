@@ -9,29 +9,56 @@ import com.google.android.material.navigation.NavigationBarView
 import com.twr.mangago.rss.RssLayoutFragment
 
 class MainActivity : AppCompatActivity() {
+    private val manager = supportFragmentManager
+    private lateinit var homeFragment:Fragment
+    private lateinit var rssLayoutFragment: Fragment
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationMenu)
-        bottomNavigationView.setOnItemSelectedListener(navListener)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment()).commit()
+           manager.beginTransaction()
+                .add(R.id.fragment_container, HomeFragment(), "HomeFragment")
+               .add(R.id.fragment_container, RssLayoutFragment(),"RssLayoutFragment")
+               .commitNow()
+
+            homeFragment = manager.findFragmentByTag("HomeFragment")!!
+            rssLayoutFragment = manager.findFragmentByTag("RssLayoutFragment")!!
+            manager
+                .beginTransaction()
+                .detach(rssLayoutFragment)
+                .commit()
         }
+
+        bottomNavigationView.setOnItemSelectedListener(navListener)
     }
 
     private val navListener = NavigationBarView.OnItemSelectedListener { item ->
-        var selectedFragment: Fragment? = null
         when (item.itemId) {
-            R.id.home -> selectedFragment = HomeFragment()
-            R.id.rss -> selectedFragment = RssLayoutFragment()
+            R.id.home -> {
+                if (homeFragment.isHidden) {
+                    manager.beginTransaction()
+                        .detach(rssLayoutFragment)
+                        .show(homeFragment)
+                        .commit()
+                }
+            }
+
+
+            R.id.rss -> {
+                if(rssLayoutFragment.isDetached) {
+                    manager.beginTransaction()
+                        .hide(homeFragment)
+                        .attach(rssLayoutFragment)
+                        .commit()
+
+                }
+            }
         }
-        supportFragmentManager.beginTransaction().replace(
-            R.id.fragment_container,
-            selectedFragment!!
-        ).commit()
         true
     }
+
 }
