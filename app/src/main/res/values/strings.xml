@@ -4,6 +4,8 @@
         \n
         %s
     </string>
+    <string name="empty">Input is empty</string>
+    <string name="rss_search_error">Error searching. Please check link and internet connection</string>
     <string name="app_name">Mangago</string>
     <string name="button_search">Search</string>
     <string name="button_save">Save</string>
@@ -14,7 +16,7 @@
     <string name="rss_positive">Yes</string>
     <string name="rss_negative">No</string>
     <string name="rss_dialogue_title">Add manga to RSS feed?</string>
-    <string name="rss_dialogue_message">You will get notifications on updates to this manga.</string>
+    <string name="rss_dialogue_message">You will get notifications on updates to this manga</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
 </resources>

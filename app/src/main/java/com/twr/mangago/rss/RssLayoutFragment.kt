@@ -27,12 +27,12 @@ class RssLayoutFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View? {
         parentFragmentManager.setFragmentResultListener("rssKey", viewLifecycleOwner){ _, bundle ->
-            val title = bundle.getString("editedTitle")
+            val title = bundle.getString("title")
             val link = bundle.getString("link")
             val lastUpdated = bundle.getString("lastUpdated")
             val latestChapter = bundle.getString("latestChapter")
             rssViewModel.insert(Rss(link!!, title!!, lastUpdated!!, latestChapter!!))
-        }
+            }
         return inflater.inflate(R.layout.rss_layout_fragment, container, false)
     }
 

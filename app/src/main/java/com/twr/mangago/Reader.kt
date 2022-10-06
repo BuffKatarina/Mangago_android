@@ -43,7 +43,7 @@ class Reader : AppCompatActivity() {
     var chapterArray = ArrayList<String>()
     var chapterMap = HashMap<String, String>()
     var populated = false
-    var baseMethods: BaseClass? = null
+    var util: Util? = null
     var vbottomAppBar: BottomAppBar? = null
     var progressBar: ProgressBar? = null
     var mpage : Int? = 0
@@ -59,7 +59,7 @@ class Reader : AppCompatActivity() {
         swipeRefresh = findViewById(R.id.swipeContainer)
         val toolBar = findViewById<Toolbar>(R.id.toolBar)
         setSupportActionBar(toolBar)
-        baseMethods = BaseClass(
+        util = Util(
             webView!!,
             swipeRefresh!!,
             this,
@@ -67,9 +67,9 @@ class Reader : AppCompatActivity() {
         )
 
         supportActionBar!!.setDisplayShowTitleEnabled(false)
-        baseMethods!!.setProgressBar()
-        baseMethods!!.swipeRefresh()
-        baseMethods!!.baseLoadWeb()
+        util!!.setProgressBar()
+        util!!.swipeRefresh()
+        util!!.baseLoadWeb()
         vbottomAppBar = findViewById(R.id.bottomAppBar)
         bottomAppBar(vbottomAppBar)
         if (savedInstanceState != null){
@@ -216,7 +216,7 @@ class Reader : AppCompatActivity() {
                     return
                 }
                 progressBar!!.visibility = View.GONE
-                baseMethods!!.injectCSS()
+                util!!.injectCSS()
                 super.onPageFinished(view, url)
                 swipeRefresh!!.isRefreshing = false
                 view.loadUrl(

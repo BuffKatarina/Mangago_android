@@ -25,7 +25,7 @@ import com.twr.mangago.rss.AddRssFragment
 class HomeFragment : Fragment() {
     var webView: WebView? = null
     var progressBar: ProgressBar? = null
-    var baseMethods: BaseClass? = null
+    var util: Util? = null
     var swipeRefresh: SwipeRefreshLayout? = null
     var addRSSDialog: AlertDialog.Builder? = null
     var rssUrl : String? = null
@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
         webView = homeView.findViewById(R.id.webView)
         progressBar = homeView.findViewById(R.id.progress_bar)
         swipeRefresh = homeView.findViewById(R.id.swipeContainer)
-        baseMethods = BaseClass(
+        util = Util(
             webView!!,
             swipeRefresh!!,
             requireActivity(),
@@ -76,9 +76,9 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        baseMethods!!.setProgressBar()
-        baseMethods!!.swipeRefresh()
-        baseMethods!!.baseLoadWeb()
+        util!!.setProgressBar()
+        util!!.swipeRefresh()
+        util!!.baseLoadWeb()
         addRSSDialog!!.create()
 
         if (savedInstanceState != null){
@@ -111,7 +111,7 @@ class HomeFragment : Fragment() {
         })
         webView!!.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
-                baseMethods!!.injectCSS()
+                util!!.injectCSS()
                 swipeRefresh!!.isRefreshing = false
                 progressBar!!.visibility = View.GONE
             }

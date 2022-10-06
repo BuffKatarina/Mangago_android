@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -26,6 +27,7 @@ class AddRssFragment : Fragment() {
     private lateinit var bottomNavigationView:BottomNavigationView
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,6 +42,7 @@ class AddRssFragment : Fragment() {
         val rssParser = RSSParser()
         var fromSearch = false
         editRssView = view.findViewById(R.id.edit_rss)
+        var parsedSuccessful = false
         val searchButton = view.findViewById<MaterialButton>(R.id.button_search)
         val card = view.findViewById<MaterialCardView>(R.id.parsed_card)
         val cardText = view.findViewById<TextView>(R.id.parsed_rss)
@@ -58,27 +61,37 @@ class AddRssFragment : Fragment() {
         searchButton.setOnClickListener {
             hideKeyboard()
             if (TextUtils.isEmpty(editRssView.text)) {
-                /*TODO*/
-            } else {
-                textInputEditText = TextInputEditText(requireContext())
-                val url = editRssView.text.toString()
-                progress.visibility = View.VISIBLE
-                rssParser.parseRSS(url).observe(viewLifecycleOwner) { returnrepo ->
-                    latestChapter = returnrepo["latestChapter"]
-                    link = returnrepo["link"]
-                    lastUpdated = returnrepo["lastUpdated"]
+                Toast.makeText(context, getString(R.string.empty), Toast.LENGTH_SHORT).show()
+            }
+            textInputEditText = TextInputEditText(requireContext())
+            val url = editRssView.text.toString()
+            progress.visibility = View.VISIBLE
+            rssParser.parseRSS(url, requireContext()).observe(viewLifecycleOwner) { parsedMap ->
+                if (parsedMap.size == 1 ){
+                    //parsedMap = {"error":error message}
                     card.visibility = View.VISIBLE
                     cardText.visibility = View.VISIBLE
-                    title = returnrepo["title"]
+                    progress.visibility = View.GONE
+                    cardText.text = parsedMap["error"]
+                }
+                else{
+                    latestChapter = parsedMap["latestChapter"]
+                    link = parsedMap["link"]
+                    lastUpdated = parsedMap["lastUpdated"]
+                    card.visibility = View.VISIBLE
+                    cardText.visibility = View.VISIBLE
+                    title = parsedMap["title"]
                     cardText.text = getString(R.string.add_rss_fragment_card_text,
                         title,
-                        returnrepo["link"])
+                        parsedMap["link"])
                     progress.visibility = View.GONE
-                    textInputEditText!!.setText(returnrepo["title"])
+                    textInputEditText!!.setText(parsedMap["title"])
                     fromSearch = true
+                    parsedSuccessful = true
                 }
-
             }
+
+
         }
         val editTitleDialog = AlertDialog.Builder(context)
             .setTitle(R.string.edit_title)
@@ -99,16 +112,25 @@ class AddRssFragment : Fragment() {
 
 
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel,null)
         card.setOnClickListener {
-            if (!fromSearch){
-//                Recycles the input text view from searchButton
-                textInputEditText = TextInputEditText(requireContext())
-                textInputEditText!!.setText(title!!)
-                }
-            fromSearch = false
-            editTitleDialog.setView(textInputEditText)
-            editTitleDialog.show()
+            if (!parsedSuccessful){
+                //refreshes parsing of rss
+                searchButton.performClick()
+            }
+            else{
+                //Recycles the input text view from searchButton if
+                //textInputEditText view already created in search and
+                // alert dialog is settings
+                //textInputEditText as view for the same time
+                if (!fromSearch){
+                    textInputEditText = TextInputEditText(requireContext())
+                    textInputEditText!!.setText(title!!)
+                    }
+                fromSearch = false
+                editTitleDialog.setView(textInputEditText)
+                editTitleDialog.show()
+            }
         }
 
     }

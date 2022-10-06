@@ -1,15 +1,18 @@
 package com.twr.mangago
 
+import android.app.Activity
 import android.content.Context
 import android.util.Base64
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-class BaseClass(
+class Util(
     var webView: WebView,
     var swipeRefresh: SwipeRefreshLayout,
     var context: Context,
@@ -58,5 +61,22 @@ class BaseClass(
         }
     }
 
-
 }
+fun Fragment.hideKeyboard() {
+    view?.let { activity?.hideKeyboard(it) }
+}
+
+fun Activity.hideKeyboard() {
+    hideKeyboard(currentFocus ?: View(this))
+}
+
+fun Context.hideKeyboard(view: View) {
+    val inputMethodManager =
+        getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Context.getString(resource: Int):String{
+    return getString(resource)
+}
+
