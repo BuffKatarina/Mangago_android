@@ -16,12 +16,13 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.twr.mangago.R
+import com.twr.mangago.hideKeyboard
 
 class AddRssFragment : Fragment() {
     private lateinit var editRssView: TextInputEditText
-    var link : String? = null
-    var lastUpdated: String? = null
-    var latestChapter: String? = null
+    private var link : String? = null
+    private var lastUpdated: String? = null
+    private var latestChapter: String? = null
     private lateinit var bottomNavigationView:BottomNavigationView
 
 
@@ -35,27 +36,31 @@ class AddRssFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val textInputEditText = TextInputEditText(requireContext())
+        var textInputEditText:TextInputEditText? = null
         val rssParser = RSSParser()
+        var fromSearch = false
         editRssView = view.findViewById(R.id.edit_rss)
-        val button = view.findViewById<MaterialButton>(R.id.button_search)
+        val searchButton = view.findViewById<MaterialButton>(R.id.button_search)
         val card = view.findViewById<MaterialCardView>(R.id.parsed_card)
         val cardText = view.findViewById<TextView>(R.id.parsed_rss)
         val manager = requireActivity().supportFragmentManager
-        bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationMenu)
+        bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationMenu)
         bottomNavigationView.visibility = View.GONE
         val progress = view.findViewById<CircularProgressIndicator>(R.id.progress)
-        parentFragmentManager.setFragmentResultListener("rssOnLink", viewLifecycleOwner){key, bundle ->
+        var title: String? = null
+        parentFragmentManager.setFragmentResultListener("rssOnLink", viewLifecycleOwner){_, bundle ->
             val rssOnLink = bundle.getString("url")
             editRssView.setText(rssOnLink)
-            button.performClick()
-            button.visibility = View.GONE
+            searchButton.performClick()
+            searchButton.visibility = View.GONE
         }
 
-        button.setOnClickListener {
+        searchButton.setOnClickListener {
+            hideKeyboard()
             if (TextUtils.isEmpty(editRssView.text)) {
                 /*TODO*/
             } else {
+                textInputEditText = TextInputEditText(requireContext())
                 val url = editRssView.text.toString()
                 progress.visibility = View.VISIBLE
                 rssParser.parseRSS(url).observe(viewLifecycleOwner) { returnrepo ->
@@ -64,20 +69,23 @@ class AddRssFragment : Fragment() {
                     lastUpdated = returnrepo["lastUpdated"]
                     card.visibility = View.VISIBLE
                     cardText.visibility = View.VISIBLE
-                    cardText.text = returnrepo["title"] + "\n" + returnrepo["link"]
+                    title = returnrepo["title"]
+                    cardText.text = getString(R.string.add_rss_fragment_card_text,
+                        title,
+                        returnrepo["link"])
                     progress.visibility = View.GONE
-                    textInputEditText.setText(returnrepo["title"])
+                    textInputEditText!!.setText(returnrepo["title"])
+                    fromSearch = true
                 }
 
             }
         }
         val editTitleDialog = AlertDialog.Builder(context)
             .setTitle(R.string.edit_title)
-            .setView(textInputEditText)
             .setPositiveButton(R.string.button_save) { _, _ ->
-                val title = textInputEditText.text.toString()
+                val editedTitle = textInputEditText!!.text.toString()
                 setFragmentResult("rssKey", bundleOf(
-                    "title" to title,
+                    "title" to editedTitle,
                     "link" to link,
                     "latestChapter" to latestChapter,
                     "lastUpdated" to lastUpdated
@@ -93,6 +101,13 @@ class AddRssFragment : Fragment() {
             }
             .setNegativeButton(R.string.cancel, null)
         card.setOnClickListener {
+            if (!fromSearch){
+//                Recycles the input text view from searchButton
+                textInputEditText = TextInputEditText(requireContext())
+                textInputEditText!!.setText(title!!)
+                }
+            fromSearch = false
+            editTitleDialog.setView(textInputEditText)
             editTitleDialog.show()
         }
 

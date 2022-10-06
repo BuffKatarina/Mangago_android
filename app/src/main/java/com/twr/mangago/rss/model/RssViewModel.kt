@@ -16,6 +16,10 @@ class RssViewModel(private val repository: RssRepository):ViewModel() {
         repository.delete(rss)
     }
 
+    fun update(rss:Rss) = viewModelScope.launch{
+        repository.update(rss)
+    }
+
 }
 
 class RssViewModelFactory(private val repository: RssRepository): ViewModelProvider.Factory{

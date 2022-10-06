@@ -16,4 +16,9 @@ class RssRepository(private val rssDao: RssDao) {
     suspend fun delete(rss: Rss){
         rssDao.delete(rss)
     }
+
+    @WorkerThread
+    suspend fun update(rss: Rss){
+        rssDao.update(rss)
+    }
 }

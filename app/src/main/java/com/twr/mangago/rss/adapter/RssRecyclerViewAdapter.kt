@@ -1,16 +1,18 @@
 package com.twr.mangago.rss.adapter
 
 
-import android.util.Log
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.twr.mangago.R
 import com.twr.mangago.db.Rss
 import com.twr.mangago.rss.model.RssViewModel
@@ -22,16 +24,32 @@ class RssRecyclerViewAdapter(viewModel: RssViewModel) : ListAdapter<Rss, RssView
         val view = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.rss_recyclerview_row, parent, false)
+        var textInputEditText:TextInputEditText? = null
+        var current:Rss? = null
+        val alertDialog = AlertDialog.Builder(view.context)
+            .setTitle(R.string.edit_title)
+            .setPositiveButton(R.string.button_save){_, _ ->
+                val title = textInputEditText!!.text.toString()
+                rssViewModel.update(Rss(current!!.link, title, current!!.lastUpdated, current!!.latestChapter))
+            }
+            .setNegativeButton(R.string.cancel, null)
+
         return RssViewHolder(view,{pos->
-            val current = getItem(pos)
-            rssViewModel.delete(Rss(current.link, current.title, current.lastUpdated, current.latestChapter))
-        },{})
+             current = getItem(pos)
+            rssViewModel.delete(Rss(current!!.link, current!!.title, current!!.lastUpdated, current!!.latestChapter))
+        },{pos->
+            current = getItem(pos)
+            textInputEditText = TextInputEditText(view.context)
+            alertDialog.setView(textInputEditText)
+            textInputEditText!!.setText(current!!.title)
+            alertDialog.show()
+        })
 
     }
 
     override fun onBindViewHolder(holder: RssViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(listOf<String>(current.title ,current.latestChapter, current.lastUpdated))
+        holder.bind(listOf(current.title ,current.latestChapter, current.lastUpdated))
     }
 }
 

@@ -1,4 +1,9 @@
 <resources>
+    <string name ="add_rss_fragment_card_text">
+        <b>%s</b>
+        \n
+        %s
+    </string>
     <string name="app_name">Mangago</string>
     <string name="button_search">Search</string>
     <string name="button_save">Save</string>

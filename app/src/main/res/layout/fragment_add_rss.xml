@@ -22,11 +22,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="@string/button_save"
+        android:text="@string/button_search"
         android:layout_below = "@+id/edit_rss"
         />
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:layout_below="@+id/button_search"
+        android:layout_below="@+id/parsed_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
