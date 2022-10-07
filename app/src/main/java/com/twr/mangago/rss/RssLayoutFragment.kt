@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.twr.mangago.R
 import com.twr.mangago.db.Rss
+import com.twr.mangago.db.model.RssViewModel
+import com.twr.mangago.db.model.RssViewModelFactory
 import com.twr.mangago.rss.adapter.RssRecyclerViewAdapter
-import com.twr.mangago.rss.model.RssViewModel
-import com.twr.mangago.rss.model.RssViewModelFactory
 
 @Suppress("DEPRECATION")
 class RssLayoutFragment : Fragment(){

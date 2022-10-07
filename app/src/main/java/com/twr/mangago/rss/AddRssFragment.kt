@@ -18,6 +18,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.twr.mangago.R
 import com.twr.mangago.hideKeyboard
+import com.twr.mangago.rss.utils.RSSParser
 
 class AddRssFragment : Fragment() {
     private lateinit var editRssView: TextInputEditText
@@ -66,7 +67,7 @@ class AddRssFragment : Fragment() {
             textInputEditText = TextInputEditText(requireContext())
             val url = editRssView.text.toString()
             progress.visibility = View.VISIBLE
-            rssParser.parseRSS(url, requireContext()).observe(viewLifecycleOwner) { parsedMap ->
+            rssParser.getParsedRss(url, requireContext()).observe(viewLifecycleOwner) { parsedMap ->
                 if (parsedMap.size == 1 ){
                     //parsedMap = {"error":error message}
                     card.visibility = View.VISIBLE

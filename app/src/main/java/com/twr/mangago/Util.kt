@@ -76,7 +76,5 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun Context.getString(resource: Int):String{
-    return getString(resource)
-}
+
 

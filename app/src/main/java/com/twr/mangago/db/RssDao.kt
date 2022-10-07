@@ -24,4 +24,8 @@ interface RssDao {
 
     @Query("SELECT * FROM rss_table")
     fun getRss(): Flow<List<Rss>>
+
+    @Query("SELECT * FROM rss_table")
+    suspend fun getReadable():Array<Rss>
+
 }

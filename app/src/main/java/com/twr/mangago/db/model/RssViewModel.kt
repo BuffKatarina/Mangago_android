@@ -1,4 +1,4 @@
-package com.twr.mangago.rss.model
+package com.twr.mangago.db.model
 
 import androidx.lifecycle.*
 import com.twr.mangago.db.Rss
@@ -16,15 +16,15 @@ class RssViewModel(private val repository: RssRepository):ViewModel() {
         repository.delete(rss)
     }
 
-    fun update(rss:Rss) = viewModelScope.launch{
+    fun update(rss: Rss) = viewModelScope.launch {
         repository.update(rss)
     }
 
-}
+    }
 
-class RssViewModelFactory(private val repository: RssRepository): ViewModelProvider.Factory{
+class RssViewModelFactory(private val repository: RssRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RssViewModel::class.java)){
+        if (modelClass.isAssignableFrom(RssViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return RssViewModel(repository) as T
         }

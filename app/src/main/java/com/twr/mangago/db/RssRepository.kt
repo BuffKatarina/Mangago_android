@@ -21,4 +21,5 @@ class RssRepository(private val rssDao: RssDao) {
     suspend fun update(rss: Rss){
         rssDao.update(rss)
     }
+
 }

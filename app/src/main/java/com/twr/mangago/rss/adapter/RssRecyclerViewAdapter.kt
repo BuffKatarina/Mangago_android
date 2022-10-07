@@ -15,7 +15,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.twr.mangago.R
 import com.twr.mangago.db.Rss
-import com.twr.mangago.rss.model.RssViewModel
+import com.twr.mangago.db.model.RssViewModel
 
 class RssRecyclerViewAdapter(viewModel: RssViewModel) : ListAdapter<Rss, RssViewHolder>(RssComparator()) {
     private val rssViewModel = viewModel

@@ -10,5 +10,4 @@ class Rss(
     @ColumnInfo(name = "title") val title:String,
     @ColumnInfo(name = "lastUpdated") val lastUpdated: String,
     @ColumnInfo(name = "latestChapter") val latestChapter:String,
-) {
-}
+)
