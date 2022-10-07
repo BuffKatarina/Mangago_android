@@ -27,7 +27,6 @@ import androidx.annotation.UiThread
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -250,7 +249,6 @@ class Reader : AppCompatActivity() {
                     generateChapterList(chapters!!)
                     populated = true
                 }
-
                  populateSpinner(currentChapter)
 
             } catch (e: Exception) {
