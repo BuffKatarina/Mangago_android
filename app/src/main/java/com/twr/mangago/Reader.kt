@@ -27,6 +27,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -106,53 +107,24 @@ class Reader : AppCompatActivity() {
             }
             R.id.multiPage -> {
                 if (item.isChecked) {
-                    if (mpage == null){
-                        mpage = 0
-                    }
-                    else{
-                        mpage = mpage!! - 1
-                    }
-                    item.setChecked(false)
-                } else {
-                   if (mpage == null){
-                       mpage = 1
-                   }
-                    else{
-                        mpage = mpage!! + 1
-                    }
-                    item.setChecked(true)
+                    item.isChecked = false}
+                else{
+                    item.isChecked = true
                 }
-                webView!!.evaluateJavascript("jQuery.post('/r/ajax/setmpage/', {mpage:$mpage}, function(){document.getElementById('multi_page_form').submit();})"
+                webView!!.evaluateJavascript("document.getElementById('multi_page').click();"
                 , null)
                 return true
+
             }
             R.id.showGap -> {
-                if (item.isChecked) {
-                   if (mpage == null){
-                       mpage = 2
-                   }
-                    else{
-                        mpage = mpage!! + 2
-                    }
-                    item.setChecked(false)
-                    webView!!.evaluateJavascript("jQuery.post('/r/ajax/setmpage/', {mpage:$mpage}, function(){" +
-                            "hidegap = setInterval(function(){" +
-                            "jQuery(\"#pic_container span[class^='loading']\").hide();" +
-                            "},100);})", null)
-
-
-                } else {
-                    if (mpage == null){
-                        mpage = 0
-                    }
-                    else{
-                        mpage = mpage!! - 2
-                    }
-                    item.setChecked(true)
-                    webView!!.evaluateJavascript("jQuery.post('/r/ajax/setmpage/', {mpage:$mpage}, function(){clearInterval(hidegap);" +
-                            "             jQuery(\"#pic_container span[class^='loading']\").show(); })", null)
-
+                if (item.isChecked){
+                    item.isChecked = false
                 }
+                else{
+                    item.isChecked = true
+                }
+                webView!!.evaluateJavascript("document.getElementById('show_page').click();"
+                    , null)
                 return true
             }
         }
@@ -207,7 +179,7 @@ class Reader : AppCompatActivity() {
             }
         })
         webView!!.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView, url: String){
                 if (checkLastChapter()) {
                     val intent = Intent()
                     intent.putExtra("url", webView!!.url)
@@ -225,27 +197,25 @@ class Reader : AppCompatActivity() {
                 )
 
                 view.evaluateJavascript(
-                    "(function(){var mpage = jQuery('#multi_page').is(':checked')?1:0;" +
-                            "mpage+= jQuery('#show_page').is(':checked')?0:2; return mpage;})();", ValueCallback<String> {s ->
-                        mpage = s.toInt()
+                    "(function(){var multipage = document.getElementById('multi_page').checked;" +
+                            "return multipage;})();", ValueCallback<String> {s ->
+                        if (s == "true") {
+                            topAppBar!!.findItem(R.id.multiPage).isChecked = true
+                        }
+                        else{
+                            topAppBar!!.findItem(R.id.multiPage).isChecked = false
+                            }
                     })
-                if (mpage == 3){
-                    topAppBar!!.findItem(R.id.multiPage).isChecked = true
-                    topAppBar!!.findItem(R.id.showGap).isChecked = false
-                }
-                if (mpage == 2){
-                    topAppBar!!.findItem(R.id.showGap).isChecked = false
-                    topAppBar!!.findItem(R.id.multiPage).isChecked = false
-                }
-                if (mpage == 1){
-                    topAppBar!!.findItem(R.id.showGap).isChecked = true
-                    topAppBar!!.findItem(R.id.multiPage).isChecked = true
-                }
-                if (mpage == 0){
-                    topAppBar!!.findItem(R.id.showGap).isChecked = true
-                    topAppBar!!.findItem(R.id.multiPage).isChecked = false
-                }
-                Log.i("MPAge",mpage.toString())
+                view.evaluateJavascript(
+                    "(function(){var multipage = document.getElementById('show_page').checked;" +
+                            "return multipage;})();", ValueCallback<String> {s ->
+                        if (s == "true") {
+                            topAppBar!!.findItem(R.id.showGap).isChecked = true
+                        }
+                        else{
+                            topAppBar!!.findItem(R.id.showGap).isChecked = false
+                        }
+                    })
             }
 
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
@@ -261,6 +231,7 @@ class Reader : AppCompatActivity() {
     public inner class HtmlJavaScriptInterface:ViewModel() {
         @JavascriptInterface
         fun handleHtml(html: String?) {
+            viewModelScope.launch{
              try {
                 val doc = Jsoup.parse(html!!)
                 val currentChapter =
@@ -275,15 +246,16 @@ class Reader : AppCompatActivity() {
                 if (!populated) {
                     val allChapters = doc.getElementsByClass("dropdown-menu chapter").first()
                     val chapters = allChapters?.select("a[href]")
+
                     generateChapterList(chapters!!)
                     populated = true
                 }
-                 viewModelScope.launch {
-                     populateSpinner(currentChapter)
-                 }
+
+                 populateSpinner(currentChapter)
+
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
+            }}
         }
     }
 

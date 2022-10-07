@@ -147,8 +147,8 @@ class HomeFragment : Fragment() {
         /*Checks if the web link is a reading page*/
         val slash = '/'
         var count = 0
-        for (i in 0 until url.length) {
-            if (url[i] == slash) {
+        for (element in url) {
+            if (element == slash) {
                 count++
             }
         }
