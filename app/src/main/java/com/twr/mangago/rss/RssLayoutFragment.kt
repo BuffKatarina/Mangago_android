@@ -52,7 +52,7 @@ class RssLayoutFragment : Fragment(){
         fab.setOnClickListener {
            manager.beginTransaction()
                 .add(R.id.fragment_container, AddRssFragment(), "AddRssFragment")
-               .hide(this)
+                .hide(this)
                 .addToBackStack(null)
                 .commit()
         }

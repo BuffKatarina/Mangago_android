@@ -22,9 +22,9 @@ import com.twr.mangago.rss.utils.RSSParser
 
 class AddRssFragment : Fragment() {
     private lateinit var editRssView: TextInputEditText
-    private var link : String? = null
-    private var lastUpdated: String? = null
-    private var latestChapter: String? = null
+    private lateinit var link : String
+    private lateinit var lastUpdated: String
+    private lateinit var latestChapter: String
     private lateinit var bottomNavigationView:BottomNavigationView
 
 
@@ -55,8 +55,8 @@ class AddRssFragment : Fragment() {
         parentFragmentManager.setFragmentResultListener("rssOnLink", viewLifecycleOwner){_, bundle ->
             val rssOnLink = bundle.getString("url")
             editRssView.setText(rssOnLink)
-            searchButton.performClick()
-            searchButton.visibility = View.GONE
+            /*searchButton.performClick()
+            searchButton.visibility = View.GONE*/
         }
 
         searchButton.setOnClickListener {
@@ -74,11 +74,12 @@ class AddRssFragment : Fragment() {
                     cardText.visibility = View.VISIBLE
                     progress.visibility = View.GONE
                     cardText.text = parsedMap["error"]
+
                 }
                 else{
-                    latestChapter = parsedMap["latestChapter"]
-                    link = parsedMap["link"]
-                    lastUpdated = parsedMap["lastUpdated"]
+                    latestChapter = parsedMap["latestChapter"]!!
+                    link = parsedMap["link"]!!
+                    lastUpdated = parsedMap["lastUpdated"]!!
                     card.visibility = View.VISIBLE
                     cardText.visibility = View.VISIBLE
                     title = parsedMap["title"]
@@ -104,14 +105,11 @@ class AddRssFragment : Fragment() {
                     "latestChapter" to latestChapter,
                     "lastUpdated" to lastUpdated
                 ))
-
                manager
                     .beginTransaction()
                     .remove(this)
                     .commit()
                     manager.popBackStack()
-
-
             }
             .setNegativeButton(R.string.cancel,null)
         card.setOnClickListener {

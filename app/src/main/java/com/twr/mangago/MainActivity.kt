@@ -1,12 +1,14 @@
 package com.twr.mangago
 
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.navigation.NavigationBarView
+import com.twr.mangago.rss.AddRssFragment
 import com.twr.mangago.rss.RssApplication
 import com.twr.mangago.rss.RssLayoutFragment
 import com.twr.mangago.rss.worker.model.CheckRssUpdatesModelFactory
@@ -14,28 +16,26 @@ import com.twr.mangago.rss.worker.model.CheckRssUpdatesViewModel
 
 class MainActivity : AppCompatActivity() {
     private val manager = supportFragmentManager
-    private lateinit var homeFragment:Fragment
+    private lateinit var homeFragment: Fragment
     private lateinit var rssLayoutFragment: Fragment
-
+    private val checkRssUpdatesViewModel: CheckRssUpdatesViewModel by viewModels{
+        CheckRssUpdatesModelFactory(application as RssApplication)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val checkRssUpdatesViewModel: CheckRssUpdatesViewModel by viewModels{
-            CheckRssUpdatesModelFactory(application as RssApplication)
-        }
         checkRssUpdatesViewModel.checkRssUpdates()
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationMenu)
         if (savedInstanceState == null) {
            manager.beginTransaction()
                 .add(R.id.fragment_container, HomeFragment(), "HomeFragment")
-               .add(R.id.fragment_container, RssLayoutFragment(),"RssLayoutFragment")
+               .add(R.id.fragment_container,RssLayoutFragment(),"RssLayoutFragment")
                .commitNow()
 
             homeFragment = manager.findFragmentByTag("HomeFragment")!!
             rssLayoutFragment = manager.findFragmentByTag("RssLayoutFragment")!!
-            manager
-                .beginTransaction()
+            manager.beginTransaction()
                 .hide(rssLayoutFragment)
                 .commit()
         }
@@ -68,4 +68,24 @@ class MainActivity : AppCompatActivity() {
         true
     }
 
+    override fun onBackPressed() {
+        if (!homeFragment.isHidden){
+            val webView = homeFragment.view?.findViewById<WebView>(R.id.webView)
+             if(webView?.canGoBack()!!){
+                 webView.goBack()
+             }
+            else{
+                super.onBackPressed()
+            }
+        }
+        else if (manager.findFragmentByTag("ReaderFragment") is ReaderFragment){
+            manager.popBackStack()
+        }
+        else if (manager.findFragmentByTag("AddRssFragment") is AddRssFragment){
+            manager.popBackStack()
+        }
+        else{
+            super.onBackPressed()
+        }
+    }
 }

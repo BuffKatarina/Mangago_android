@@ -64,4 +64,5 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.5.3"
     implementation "androidx.navigation:navigation-fragment-ktx:2.5.2"
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+    
 }
