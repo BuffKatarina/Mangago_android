@@ -38,8 +38,7 @@ class HomeFragment : Fragment() {
 
 
     override fun onSaveInstanceState(outState: Bundle) {
-        webView.saveState(Bundle())
-        outState.putBundle("webViewState", Bundle())
+        outState.putString("url", webView.url)
         super.onSaveInstanceState(outState)
     }
 
@@ -74,17 +73,16 @@ class HomeFragment : Fragment() {
         util.swipeRefresh()
         util.baseLoadWeb()
         addRSSDialog.create()
+
         setFragmentResultListener("fromReaderKey"){_,bundle ->
             loadWeb(bundle.getString("last_chapter")!!)
             fromOtherFragment=  true
 
         }
         if (savedInstanceState != null){
-            with (savedInstanceState){
-                webView.restoreState(getBundle("webViewState")!!)
-            }
+                loadWeb(savedInstanceState.getString("url")!!)
         }
-        else if (!fromOtherFragment){
+        else {
             loadWeb("https://www.mangago.me/")
         }
     }
@@ -134,7 +132,7 @@ class HomeFragment : Fragment() {
                 count++
             }
         }
-        return webView.url!!.contains("read-manga") and (count > 5)
+        return url.contains("read-manga") and (count > 5) and (!url.contains("login"))
     }
 
     private fun goToReaderFragment(url: String?) {
@@ -147,7 +145,6 @@ class HomeFragment : Fragment() {
             .commit()
 
     }
-
 
 }
 

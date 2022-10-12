@@ -21,6 +21,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.Lifecycle
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -78,13 +79,17 @@ class ReaderFragment : Fragment() {
         vBottomAppBar = view.findViewById(R.id.bottomAppBar)
         bottomAppBar(vBottomAppBar)
         if (savedInstanceState != null){
-            with (savedInstanceState){
-                webView.restoreState(getBundle("webViewState")!!)
-            }
+            loadWeb(savedInstanceState.getString("url"))
+
         }
         setupMenu()
-    }
 
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        webView.saveState(Bundle())
+        outState.putString("url", webView.url)
+        super.onSaveInstanceState(outState)
+    }
 
     private fun setupMenu(){
         (requireActivity() as MenuHost).addMenuProvider(object:MenuProvider{
@@ -116,13 +121,9 @@ class ReaderFragment : Fragment() {
                 return false
             }
 
-        })
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
-    override fun onSaveInstanceState(outState: Bundle) {
-        webView.saveState(Bundle())
-        outState.putBundle("webViewState", Bundle())
-        super.onSaveInstanceState(outState)
-    }
+
 
 
     private fun bottomAppBar(bottomAppBar: BottomAppBar?) {
@@ -181,10 +182,7 @@ class ReaderFragment : Fragment() {
                 if (url?.contains("recommend-manga")!!){
                     val manager = requireActivity().supportFragmentManager
                     setFragmentResult("fromReaderKey", bundleOf("last_chapter" to url))
-                    manager.beginTransaction()
-                        .remove(manager.findFragmentByTag("ReaderFragment")!!)
-                        .show(manager.findFragmentByTag("HomeFragment")!!)
-                        .commit()
+                    manager.popBackStack()
                 }
             }
 
@@ -242,7 +240,7 @@ class ReaderFragment : Fragment() {
                         val chapters = allChapters?.select("a[href]")
 
                         generateChapterList(chapters!!)
-                        populated = true
+
                     }
                     populateSpinner(currentChapter)
 
@@ -261,12 +259,14 @@ class ReaderFragment : Fragment() {
             chapterArray
         )
         chaptersSpinner.setText(currentChapter, false)
+        if (!populated){
         chaptersSpinner.setAdapter(chaptersAdapter)
         chaptersSpinner.onItemClickListener = OnItemClickListener { _, _, i, _ ->
             webView.loadUrl(
                 chapterMap[chaptersAdapter.getItem(i).toString()]!!
             )
-
+        }
+            populated = true
         }
 
     }
@@ -285,7 +285,6 @@ class ReaderFragment : Fragment() {
     @Suppress("DEPRECATION")
     fun hideSystemBars() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            requireActivity().window.setDecorFitsSystemWindows(false)
             val controller = requireActivity().window.insetsController
             if (controller != null) {
                 controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
@@ -306,7 +305,6 @@ class ReaderFragment : Fragment() {
     @Suppress("DEPRECATION")
     fun showSystemBars() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            requireActivity().window.setDecorFitsSystemWindows(true)
             val controller = requireActivity().window.insetsController
             controller?.show(WindowInsetsCompat.Type.systemBars())
             (activity as MainActivity).supportActionBar!!.show()
@@ -322,6 +320,7 @@ class ReaderFragment : Fragment() {
 
     override fun onDestroy() {
         bottomNavigationView.visibility = View.VISIBLE
+        showSystemBars()
         super.onDestroy()
     }
 }

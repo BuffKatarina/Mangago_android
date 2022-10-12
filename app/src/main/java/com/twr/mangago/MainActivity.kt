@@ -1,6 +1,7 @@
 package com.twr.mangago
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.webkit.WebView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,11 +28,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         checkRssUpdatesViewModel.checkRssUpdates()
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationMenu)
-        if (savedInstanceState == null) {
-           manager.beginTransaction()
+        bottomNavigationView.setOnItemSelectedListener(navListener)
+        if (savedInstanceState != null){
+            manager.getFragment(savedInstanceState, "HomeFragment")
+            manager.getFragment(savedInstanceState, "RssLayoutFragment")
+            homeFragment = manager.findFragmentByTag("HomeFragment")!!
+            rssLayoutFragment = manager.findFragmentByTag("RssLayoutFragment")!!
+
+        }
+        else {
+            manager.beginTransaction()
                 .add(R.id.fragment_container, HomeFragment(), "HomeFragment")
-               .add(R.id.fragment_container,RssLayoutFragment(),"RssLayoutFragment")
-               .commitNow()
+                .add(R.id.fragment_container, RssLayoutFragment(), "RssLayoutFragment")
+                .commitNow()
 
             homeFragment = manager.findFragmentByTag("HomeFragment")!!
             rssLayoutFragment = manager.findFragmentByTag("RssLayoutFragment")!!
@@ -40,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        bottomNavigationView.setOnItemSelectedListener(navListener)
+
     }
 
     private val navListener = NavigationBarView.OnItemSelectedListener { item ->
@@ -69,23 +78,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (!homeFragment.isHidden){
+        if (!homeFragment.isHidden) {
             val webView = homeFragment.view?.findViewById<WebView>(R.id.webView)
-             if(webView?.canGoBack()!!){
-                 webView.goBack()
-             }
-            else{
+            if (webView?.canGoBack()!!) {
+                webView.goBack()
+            } else {
                 super.onBackPressed()
             }
-        }
-        else if (manager.findFragmentByTag("ReaderFragment") is ReaderFragment){
+        } else if (manager.findFragmentByTag("ReaderFragment") is ReaderFragment) {
             manager.popBackStack()
-        }
-        else if (manager.findFragmentByTag("AddRssFragment") is AddRssFragment){
+        } else if (manager.findFragmentByTag("AddRssFragment") is AddRssFragment) {
             manager.popBackStack()
         }
         else{
             super.onBackPressed()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        manager.putFragment(outState, "HomeFragment", homeFragment)
+        manager.putFragment(outState, "RssLayoutFragment", rssLayoutFragment)
+
     }
 }
