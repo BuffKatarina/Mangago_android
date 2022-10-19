@@ -1,4 +1,4 @@
-package com.twr.mangago.db
+package com.twr.mangago.rss.db
 
 import android.content.Context
 import androidx.room.Database
@@ -13,7 +13,7 @@ abstract class RssDb : RoomDatabase(){
         @Volatile
         private var INSTANCE : RssDb? = null
         fun getDatabase(context : Context
-                        ): RssDb{
+                        ): RssDb {
             return if (INSTANCE == null){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

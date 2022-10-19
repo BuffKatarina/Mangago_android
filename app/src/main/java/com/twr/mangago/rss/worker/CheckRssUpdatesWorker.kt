@@ -4,8 +4,8 @@ package com.twr.mangago.rss.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.twr.mangago.db.Rss
-import com.twr.mangago.db.RssDb
+import com.twr.mangago.rss.db.Rss
+import com.twr.mangago.rss.db.RssDb
 import com.twr.mangago.rss.utils.NotificationUtils
 import com.twr.mangago.rss.utils.RSSParser
 
@@ -26,11 +26,13 @@ class CheckRssUpdatesWorker(private val context: Context, workerParams: WorkerPa
                 if (rss.lastUpdated != newRss["lastUpdated"]){
                     val latestChapter = newRss["latestChapter"]
                     val lastUpdate = newRss["lastUpdated"]
-                    rssDao.update(Rss(
+                    rssDao.update(
+                        Rss(
                         rss.link,
                         rss.title,
                         lastUpdate!!,
-                        latestChapter!!))
+                        latestChapter!!)
+                    )
                     NotificationUtils(context).createNotification(latestChapter,rss.title)}
             }
         } catch (e: Exception) {

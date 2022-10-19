@@ -1,11 +1,13 @@
-package com.twr.mangago
+package com.twr.mangago.ui
 
 import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -16,7 +18,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.twr.mangago.rss.AddRssFragment
+import com.twr.mangago.R
+import com.twr.mangago.Util
+import com.twr.mangago.rss.ui.AddRssFragment
+import com.twr.mangago.ui.reader.ReaderFragment
 
 
 class HomeFragment : Fragment() {
@@ -57,7 +62,8 @@ class HomeFragment : Fragment() {
         addRSSDialog = AlertDialog.Builder(activity)
         addRSSDialog.setMessage(R.string.rss_dialogue_message)
             .setTitle(R.string.rss_dialogue_title)
-            .setPositiveButton(R.string.rss_positive
+            .setPositiveButton(
+                R.string.rss_positive
             ) { _, _ ->
                 setFragmentResult("rssOnLink", bundleOf("url" to rssUrl))
                 manager
@@ -94,12 +100,15 @@ class HomeFragment : Fragment() {
                 util.injectCSS()
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
+
+
             }
 
             override fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
+                val cookie = CookieManager.getInstance().getCookie(url).split(";")[3]
                 if (checkUrl(url)) {
                     webView.stopLoading()
-                    goToReaderFragment(url)
+                    goToReaderFragment(url, cookie)
                     webView.goBack()
                 }
             }
@@ -135,8 +144,9 @@ class HomeFragment : Fragment() {
         return url.contains("read-manga") and (count > 5) and (!url.contains("login"))
     }
 
-    private fun goToReaderFragment(url: String?) {
-        setFragmentResult("ReaderKey", bundleOf("manga_url" to url))
+    private fun goToReaderFragment(url: String?, cookie:String) {
+        setFragmentResult("ReaderKey", bundleOf("manga_url" to url
+        , "cookie" to cookie, "user_agent" to webView.settings.userAgentString))
         manager.beginTransaction()
             /*.replace(R.id.fragment_container, ReaderFragment())*/
             .add(R.id.fragment_container, ReaderFragment(), "ReaderFragment")

@@ -1,4 +1,4 @@
-package com.twr.mangago.rss
+package com.twr.mangago.rss.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -55,8 +55,8 @@ class AddRssFragment : Fragment() {
         parentFragmentManager.setFragmentResultListener("rssOnLink", viewLifecycleOwner){_, bundle ->
             val rssOnLink = bundle.getString("url")
             editRssView.setText(rssOnLink)
-            /*searchButton.performClick()
-            searchButton.visibility = View.GONE*/
+            searchButton.performClick()
+            searchButton.visibility = View.GONE
         }
 
         searchButton.setOnClickListener {
@@ -69,7 +69,6 @@ class AddRssFragment : Fragment() {
             progress.visibility = View.VISIBLE
             rssParser.getParsedRss(url, requireContext()).observe(viewLifecycleOwner) { parsedMap ->
                 if (parsedMap.size == 1 ){
-                    //parsedMap = {"error":error message}
                     card.visibility = View.VISIBLE
                     cardText.visibility = View.VISIBLE
                     progress.visibility = View.GONE

@@ -1,4 +1,4 @@
-package com.twr.mangago.rss
+package com.twr.mangago.rss.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.twr.mangago.R
-import com.twr.mangago.db.Rss
-import com.twr.mangago.db.model.RssViewModel
-import com.twr.mangago.db.model.RssViewModelFactory
+import com.twr.mangago.rss.db.Rss
+import com.twr.mangago.rss.db.model.RssViewModel
+import com.twr.mangago.rss.db.model.RssViewModelFactory
+import com.twr.mangago.rss.RssApplication
 import com.twr.mangago.rss.adapter.RssRecyclerViewAdapter
 
 @Suppress("DEPRECATION")

@@ -1,4 +1,4 @@
-package com.twr.mangago.db
+package com.twr.mangago.rss.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RssDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(rss:Rss)
+    suspend fun insert(rss: Rss)
 
     @Update
-    suspend fun update(rss:Rss)
+    suspend fun update(rss: Rss)
 
     @Delete
-    suspend fun delete(rss:Rss)
+    suspend fun delete(rss: Rss)
 
     @Query("DELETE FROM rss_table")
     suspend fun deleteAll()

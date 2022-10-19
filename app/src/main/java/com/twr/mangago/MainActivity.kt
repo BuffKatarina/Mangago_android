@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.navigation.NavigationBarView
-import com.twr.mangago.rss.AddRssFragment
+import com.twr.mangago.rss.ui.AddRssFragment
 import com.twr.mangago.rss.RssApplication
-import com.twr.mangago.rss.RssLayoutFragment
+import com.twr.mangago.rss.ui.RssLayoutFragment
 import com.twr.mangago.rss.worker.model.CheckRssUpdatesModelFactory
 import com.twr.mangago.rss.worker.model.CheckRssUpdatesViewModel
+import com.twr.mangago.ui.HomeFragment
+import com.twr.mangago.ui.reader.ReaderFragment
 
 class MainActivity : AppCompatActivity() {
     private val manager = supportFragmentManager

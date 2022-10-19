@@ -1,8 +1,8 @@
-package com.twr.mangago.db.model
+package com.twr.mangago.rss.db.model
 
 import androidx.lifecycle.*
-import com.twr.mangago.db.Rss
-import com.twr.mangago.db.RssRepository
+import com.twr.mangago.rss.db.Rss
+import com.twr.mangago.rss.db.RssRepository
 import kotlinx.coroutines.launch
 
 class RssViewModel(private val repository: RssRepository):ViewModel() {

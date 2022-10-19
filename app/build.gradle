@@ -38,6 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'mozilla/public-suffix-list.txt'
+    }
 }
 
 dependencies {
@@ -64,5 +68,6 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.5.3"
     implementation "androidx.navigation:navigation-fragment-ktx:2.5.2"
     implementation "androidx.work:work-runtime-ktx:2.7.1"
-    
+    implementation 'com.squareup.picasso:picasso:2.8'
+
 }

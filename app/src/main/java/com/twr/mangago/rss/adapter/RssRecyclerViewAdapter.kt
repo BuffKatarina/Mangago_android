@@ -14,18 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.twr.mangago.R
-import com.twr.mangago.db.Rss
-import com.twr.mangago.db.model.RssViewModel
+import com.twr.mangago.rss.db.Rss
+import com.twr.mangago.rss.db.model.RssViewModel
 
-class RssRecyclerViewAdapter(viewModel: RssViewModel) : ListAdapter<Rss, RssViewHolder>(RssComparator()) {
-    private val rssViewModel = viewModel
-
+class RssRecyclerViewAdapter(private val rssViewModel: RssViewModel) : ListAdapter<Rss, RssViewHolder>(RssComparator()) {
+    
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RssViewHolder {
         val view = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.rss_recyclerview_row, parent, false)
         var textInputEditText:TextInputEditText? = null
-        var current:Rss? = null
+        var current: Rss? = null
         val alertDialog = AlertDialog.Builder(view.context)
             .setTitle(R.string.edit_title)
             .setPositiveButton(R.string.button_save){_, _ ->

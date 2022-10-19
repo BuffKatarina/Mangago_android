@@ -1,4 +1,4 @@
-package com.twr.mangago.db
+package com.twr.mangago.rss.db
 
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow
