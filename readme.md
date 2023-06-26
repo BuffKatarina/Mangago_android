@@ -1,8 +1,8 @@
 # Mangago for Android
 
 ## Overview
-Android app for the site https://mangago.me/ which contains comics from various sources. 
-Site does not provide an API.
+Android app for the site https://mangago.me/ which contains comics from various sources. \
+Site does not provide an API.\
 ⚠ Site contains NSFW and other sensitive content — proceed at your own discretion.
 
 ## How it works
